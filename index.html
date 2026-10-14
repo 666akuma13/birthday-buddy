@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#e94560" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="Never forget a birthday again!" />
+  <title>Birthday Buddy</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ========== SPLASH SCREEN ========== -->
+  <div id="splash" class="splash">
+    <div class="splash-content">
+      <div class="splash-icon">🎂</div>
+      <h1>Birthday Buddy</h1>
+      <p>Never forget a birthday again</p>
+    </div>
+  </div>
+
+  <!-- ========== MAIN APP ========== -->
+  <div id="app" class="app hidden">
+
+    <!-- HEADER -->
+    <header class="header">
+      <h1>🎂 Birthday Buddy</h1>
+      <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings">⚙️</button>
+    </header>
+
+    <!-- TODAY BANNER (shown when there's a birthday today) -->
+    <div id="today-banner" class="today-banner hidden">
+      <div class="confetti-bg"></div>
+      <div class="banner-content">
+        <div class="banner-emoji">🎉</div>
+        <h2 id="today-text">Today is someone's birthday!</h2>
+        <p id="today-sub"></p>
+      </div>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search birthdays..." autocomplete="off" />
+    </div>
+
+    <!-- TABS -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="upcoming">📅 Upcoming</button>
+      <button class="tab" data-tab="all">👥 All</button>
+      <button class="tab" data-tab="months">📊 Months</button>
+    </nav>
+
+    <!-- TAB CONTENT -->
+    <main class="content">
+      <!-- Upcoming Tab -->
+      <section id="tab-upcoming" class="tab-panel active">
+        <div id="upcoming-list" class="birthday-list"></div>
+        <div id="empty-upcoming" class="empty-state hidden">
+          <div class="empty-icon">📭</div>
+          <h3>No upcoming birthdays</h3>
+          <p>Add your first birthday below!</p>
+        </div>
+      </section>
+
+      <!-- All Tab -->
+      <section id="tab-all" class="tab-panel hidden">
+        <div id="all-list" class="birthday-list"></div>
+        <div id="empty-all" class="empty-state hidden">
+          <div class="empty-icon">📭</div>
+          <h3>No birthdays saved yet</h3>
+          <p>Tap the + button to add one!</p>
+        </div>
+      </section>
+
+      <!-- Months Tab -->
+      <section id="tab-months" class="tab-panel hidden">
+        <div id="months-grid" class="months-grid"></div>
+      </section>
+    </main>
+
+    <!-- FAB (Floating Action Button) -->
+    <button id="fab" class="fab" title="Add Birthday" aria-label="Add Birthday">+</button>
+
+  </div>
+
+  <!-- ========== ADD/EDIT MODAL ========== -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Add Birthday</h2>
+        <button id="modal-close" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <form id="birthday-form" class="birthday-form">
+        <input type="hidden" id="edit-id" />
+
+        <div class="form-group">
+          <label for="input-name">Name <span class="required">*</span></label>
+          <input type="text" id="input-name" placeholder="e.g. Mom, Rahul, Priya..." required autocomplete="off" />
+        </div>
+
+        <div class="form-group">
+          <label for="input-date">Birthday <span class="required">*</span></label>
+          <input type="date" id="input-date" required />
+        </div>
+
+        <div class="form-group">
+          <label for="input-relation">Relationship</label>
+          <select id="input-relation">
+            <option value="">Select...</option>
+            <option value="👨‍👩‍👧 Family">👨‍👩‍👧 Family</option>
+            <option value="❤️ Partner">❤️ Partner</option>
+            <option value="🤝 Friend">🤝 Friend</option>
+            <option value="💼 Colleague">💼 Colleague</option>
+            <option value="📚 Classmate">📚 Classmate</option>
+            <option value="🏠 Neighbor">🏠 Neighbor</option>
+            <option value="🧑 Other">🧑 Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="input-notes">Notes</label>
+          <textarea id="input-notes" placeholder="Gift ideas, party plans, wishes..." rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="input-reminder">Remind me</label>
+          <select id="input-reminder">
+            <option value="0">On the day</option>
+            <option value="1" selected>1 day before</option>
+            <option value="3">3 days before</option>
+            <option value="7">1 week before</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="btn-delete" class="btn btn-danger hidden">🗑️ Delete</button>
+          <button type="submit" class="btn btn-primary">💾 Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== SETTINGS MODAL ========== -->
+  <div id="settings-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>⚙️ Settings</h2>
+        <button id="settings-close" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="settings-body">
+        <div class="setting-item">
+          <div>
+            <strong>🔔 Notifications</strong>
+            <p class="setting-desc" id="notif-status">Enable push notifications</p>
+          </div>
+          <button id="btn-enable-notif" class="btn btn-sm btn-primary">Enable</button>
+        </div>
+        <div class="setting-item">
+          <div>
+            <strong>⏰ Reminder Time</strong>
+            <p class="setting-desc">What time should reminders fire?</p>
+          </div>
+          <input type="time" id="input-reminder-time" value="08:00" />
+        </div>
+        <hr />
+        <div class="setting-item">
+          <div>
+            <strong>📤 Export Data</strong>
+            <p class="setting-desc">Download all birthdays as JSON</p>
+          </div>
+          <button id="btn-export" class="btn btn-sm btn-outline">Export</button>
+        </div>
+        <div class="setting-item">
+          <div>
+            <strong>📥 Import Data</strong>
+            <p class="setting-desc">Import birthdays from JSON file</p>
+          </div>
+          <label class="btn btn-sm btn-outline" for="file-import">Import</label>
+          <input type="file" id="file-import" accept=".json" hidden />
+        </div>
+        <hr />
+        <div class="setting-item">
+          <div>
+            <strong>🗑️ Clear All Data</strong>
+            <p class="setting-desc">Delete all saved birthdays</p>
+          </div>
+          <button id="btn-clear" class="btn btn-sm btn-danger">Clear</button>
+        </div>
+        <div class="setting-footer">
+          <p>Birthday Buddy v1.0</p>
+          <p>Made with ❤️ — Your birthdays, your device.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== DETAIL MODAL ========== -->
+  <div id="detail-overlay" class="modal-overlay hidden">
+    <div class="modal detail-modal">
+      <div class="modal-header">
+        <h2 id="detail-title">Birthday Details</h2>
+        <button id="detail-close" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div id="detail-body" class="detail-body"></div>
+      <div class="form-actions">
+        <button id="detail-edit" class="btn btn-primary">✏️ Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
